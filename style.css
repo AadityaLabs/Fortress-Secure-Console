@@ -1,0 +1,96 @@
+/* Premium Glassmorphism & Custom scrollbar effects */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(5, 6, 9, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(13, 240, 255, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(13, 240, 255, 0.5);
+}
+
+body {
+  background-color: #050609;
+  overflow-x: hidden;
+  perspective: 1000px;
+}
+
+.glass-panel {
+  background: rgba(11, 13, 19, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-input {
+  background: rgba(5, 6, 9, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.glass-input:focus {
+  border-color: #0df0ff;
+  box-shadow: 0 0 15px rgba(13, 240, 255, 0.15);
+  background: rgba(5, 6, 9, 0.8);
+}
+
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  background: rgba(255, 255, 255, 0.1);
+  height: 6px;
+  border-radius: 9999px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -5px;
+  background-color: #0df0ff;
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  box-shadow: 0 0 10px #0df0ff;
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background-color: #00ffaa;
+  box-shadow: 0 0 12px #00ffaa;
+}
+
+@keyframes orbit-cw {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes orbit-ccw {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.anim-orbit-cw {
+  animation: orbit-cw 12s linear infinite;
+}
+.anim-orbit-ccw {
+  animation: orbit-ccw 18s linear infinite;
+}
+
+.switch-checkbox:checked + .switch-label {
+  background-color: #0df0ff;
+}
+.switch-checkbox:checked + .switch-label .switch-dot {
+  transform: translateX(1.25rem);
+  background-color: #050609;
+}

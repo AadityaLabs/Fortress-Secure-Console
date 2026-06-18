@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fortress8D // Ultimate Secure Password Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: {
+              50: '#f4f5f6',
+              100: '#e9ebed',
+              800: '#151922',
+              900: '#0b0d13',
+              950: '#050609',
+            },
+            accent: {
+              cyan: '#0df0ff',
+              emerald: '#00ffaa',
+              violet: '#8a2be2',
+              coral: '#ff3366',
+            }
+          },
+          boxShadow: {
+            'glow-cyan': '0 0 25px -5px rgba(13, 240, 255, 0.4)',
+            'glow-emerald': '0 0 25px -5px rgba(0, 255, 170, 0.4)',
+            'glow-violet': '0 0 25px -5px rgba(138, 43, 226, 0.4)',
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-slate-200 font-sans min-h-screen relative flex flex-col justify-between overflow-y-auto">
+  <canvas id="canvas8d" class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none opacity-60"></canvas>
+  <div class="fixed top-1/4 left-1/4 w-[500px] h-[500px] bg-accent-violet/10 rounded-full blur-[120px] pointer-events-none -z-20"></div>
+  <div class="fixed bottom-1/4 right-1/4 w-[600px] h-[600px] bg-accent-cyan/10 rounded-full blur-[150px] pointer-events-none -z-20"></div>
+
+  <header class="w-full px-6 py-4 flex justify-between items-center z-10 glass-panel border-b border-white/5">
+    <div class="flex items-center space-x-3 select-none">
+      <div class="relative w-10 h-10 flex items-center justify-center">
+        <svg class="absolute w-full h-full text-accent-cyan anim-orbit-cw" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="20 10" />
+        </svg>
+        <svg class="absolute w-7 h-7 text-accent-emerald anim-orbit-ccw" viewBox="0 0 100 100">
+          <polygon points="50,15 90,80 10,80" fill="none" stroke="currentColor" stroke-width="3" />
+        </svg>
+        <i data-lucide="shield" class="w-4 h-4 text-white z-10"></i>
+      </div>
+      <div>
+        <span class="font-extrabold tracking-widest text-lg bg-gradient-to-r from-white via-slate-300 to-accent-cyan bg-clip-text text-transparent">FORTRESS<span class="text-accent-cyan">8D</span></span>
+        <div class="text-[9px] tracking-widest text-accent-emerald uppercase font-mono">Secure Engine v4.0</div>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center space-x-6 text-xs font-mono text-slate-400">
+      <div class="flex items-center space-x-2">
+        <span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
+        <span>Entropy Algorithm: AES-GCM-256</span>
+      </div>
+      <div class="h-4 w-[1px] bg-white/10"></div>
+      <div class="flex items-center space-x-2">
+        <span>Spatial Dimensions:</span>
+        <span class="text-accent-cyan" id="dimension-indicator">8DoF Active</span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3">
+      <button onclick="toggleSection('generator')" id="tab-generator" class="px-4 py-1.5 rounded-full text-xs font-medium bg-white/10 text-white transition-all border border-white/10 shadow-lg shadow-black/30">
+        Generator
+      </button>
+      <button onclick="toggleSection('vault')" id="tab-vault" class="px-4 py-1.5 rounded-full text-xs font-medium text-slate-400 hover:text-white transition-all border border-transparent flex items-center space-x-1">
+        <span>Vault</span>
+        <span id="vault-count-badge" class="px-1.5 py-0.2 bg-accent-cyan/20 text-accent-cyan rounded-full text-[10px]">0</span>
+      </button>
+      <button onclick="toggleSection('audit')" id="tab-audit" class="px-4 py-1.5 rounded-full text-xs font-medium text-slate-400 hover:text-white transition-all border border-transparent">
+        Strength Auditor
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-8 md:py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start z-10">
+    <section id="section-generator" class="lg:col-span-8 space-y-6 transition-all duration-500 ease-out transform">
+      <div class="tilt-card glass-panel rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl hover:border-accent-cyan/20 transition-all duration-300">
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-accent-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative mb-8">
+          <div class="absolute -inset-1 rounded-2xl bg-gradient-to-r from-accent-cyan/20 via-accent-violet/20 to-accent-emerald/20 opacity-70 blur-md"></div>
+          <div class="relative glass-panel rounded-2xl p-5 md:p-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 border border-white/15">
+            <div class="flex-grow min-w-0">
+              <span class="text-[10px] tracking-wider uppercase text-slate-400 font-mono block mb-1">Generated Output</span>
+              <div id="password-display" class="font-mono text-xl md:text-2xl font-bold tracking-wider text-white overflow-x-auto whitespace-nowrap scrollbar-none py-1 select-all h-9 flex items-center">
+                Generating Secure Key...
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 shrink-0 border-t md:border-t-0 pt-4 md:pt-0 border-white/5">
+              <button onclick="regeneratePassword()" class="p-3 rounded-xl bg-white/5 hover:bg-accent-cyan/10 hover:text-accent-cyan text-slate-300 transition-all duration-200 active:scale-95" title="Re-generate key">
+                <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+              </button>
+              <button onclick="copyToClipboard()" class="p-3 rounded-xl bg-white/5 hover:bg-accent-emerald/10 hover:text-accent-emerald text-slate-300 transition-all duration-200 active:scale-95 relative" title="Copy to Clipboard">
+                <i data-lucide="copy" class="w-5 h-5"></i>
+              </button>
+              <button onclick="openSaveModal()" class="px-5 py-3 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-violet text-black font-semibold hover:opacity-90 hover:shadow-glow-cyan transition-all duration-300 flex items-center space-x-2 active:scale-95">
+                <i data-lucide="bookmark" class="w-4 h-4"></i>
+                <span class="text-xs tracking-wider uppercase font-extrabold">Save Key</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div class="space-y-6">
+            <h3 class="text-sm font-semibold tracking-wider uppercase text-slate-300 flex items-center space-x-2">
+              <i data-lucide="sliders" class="w-4 h-4 text-accent-cyan"></i>
+              <span>Engine Parameters</span>
+            </h3>
+            <div class="bg-black/35 rounded-xl p-1 flex border border-white/5">
+              <button onclick="setGeneratorMode('characters')" id="mode-characters" class="flex-1 py-2 text-xs font-semibold rounded-lg text-white bg-white/10 transition-all">
+                Random Alpha-Numeric
+              </button>
+              <button onclick="setGeneratorMode('passphrase')" id="mode-passphrase" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all">
+                Pronounceable Passphrase
+              </button>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center text-xs">
+                <span id="slider-label" class="text-slate-400">Entropy Length</span>
+                <span class="font-mono text-accent-cyan font-bold bg-accent-cyan/10 px-2 py-0.5 rounded text-sm" id="length-display">16</span>
+              </div>
+              <input type="range" id="password-length" min="6" max="64" value="16" oninput="updateLengthDisplay(this.value)" class="w-full">
+              <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                <span>Min: 6</span>
+                <span>Max: 64</span>
+              </div>
+            </div>
+            <div id="character-options" class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="p-1.5 rounded-lg bg-white/5 text-slate-300"><span class="font-mono font-bold text-xs">A-Z</span></div>
+                  <div>
+                    <div class="text-xs font-semibold">Uppercase Letters</div>
+                    <div class="text-[10px] text-slate-400">Include ABC.. letters</div>
+                  </div>
+                </div>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                  <input type="checkbox" id="opt-uppercase" checked onchange="regeneratePassword()" class="switch-checkbox hidden">
+                  <label for="opt-uppercase" class="switch-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
+                    <span class="switch-dot block h-3 w-3 rounded-full bg-white shadow transform translate-x-1 translate-y-1 transition-transform duration-200"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="p-1.5 rounded-lg bg-white/5 text-slate-300"><span class="font-mono font-bold text-xs">a-z</span></div>
+                  <div>
+                    <div class="text-xs font-semibold">Lowercase Letters</div>
+                    <div class="text-[10px] text-slate-400">Include abc.. letters</div>
+                  </div>
+                </div>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                  <input type="checkbox" id="opt-lowercase" checked onchange="regeneratePassword()" class="switch-checkbox hidden">
+                  <label for="opt-lowercase" class="switch-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
+                    <span class="switch-dot block h-3 w-3 rounded-full bg-white shadow transform translate-x-1 translate-y-1 transition-transform duration-200"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="p-1.5 rounded-lg bg-white/5 text-slate-300"><span class="font-mono font-bold text-xs">0-9</span></div>
+                  <div>
+                    <div class="text-xs font-semibold">Numerical Digits</div>
+                    <div class="text-[10px] text-slate-400">Include 0-9 values</div>
+                  </div>
+                </div>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                  <input type="checkbox" id="opt-numbers" checked onchange="regeneratePassword()" class="switch-checkbox hidden">
+                  <label for="opt-numbers" class="switch-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
+                    <span class="switch-dot block h-3 w-3 rounded-full bg-white shadow transform translate-x-1 translate-y-1 transition-transform duration-200"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="p-1.5 rounded-lg bg-white/5 text-slate-300"><span class="font-mono font-bold text-xs">#%!</span></div>
+                  <div>
+                    <div class="text-xs font-semibold">Special Symbols</div>
+                    <div class="text-[10px] text-slate-400">Include symbols like $%@!#</div>
+                  </div>
+                </div>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                  <input type="checkbox" id="opt-symbols" checked onchange="regeneratePassword()" class="switch-checkbox hidden">
+                  <label for="opt-symbols" class="switch-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
+                    <span class="switch-dot block h-3 w-3 rounded-full bg-white shadow transform translate-x-1 translate-y-1 transition-transform duration-200"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div id="passphrase-options" class="space-y-4 hidden">
+              <div class="space-y-2">
+                <label class="text-xs text-slate-400 block">Separator Character</label>
+                <select id="opt-separator" onchange="regeneratePassword()" class="w-full glass-input text-xs rounded-xl p-3 text-white outline-none">
+                  <option value="-">Hyphen (-)</option>
+                  <option value=".">Period (.)</option>
+                  <option value="_">Underscore (_)</option>
+                  <option value="/">Slash (/)</option>
+                  <option value="random">Randomize Separators</option>
+                </select>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="p-1.5 rounded-lg bg-white/5 text-slate-300"><i data-lucide="type" class="w-4 h-4"></i></div>
+                  <div>
+                    <div class="text-xs font-semibold">Capitalize Words</div>
+                    <div class="text-[10px] text-slate-400">Start each word with capital letter</div>
+                  </div>
+                </div>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                  <input type="checkbox" id="opt-capitalize" checked onchange="regeneratePassword()" class="switch-checkbox hidden">
+                  <label for="opt-capitalize" class="switch-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
+                    <span class="switch-dot block h-3 w-3 rounded-full bg-white shadow transform translate-x-1 translate-y-1 transition-transform duration-200"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="p-1.5 rounded-lg bg-white/5 text-slate-300"><i data-lucide="hash" class="w-4 h-4"></i></div>
+                  <div>
+                    <div class="text-xs font-semibold">Append Random Number</div>
+                    <div class="text-[10px] text-slate-400">Add random numbers at end</div>
+                  </div>
+                </div>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                  <input type="checkbox" id="opt-append-num" checked onchange="regeneratePassword()" class="switch-checkbox hidden">
+                  <label for="opt-append-num" class="switch-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
+                    <span class="switch-dot block h-3 w-3 rounded-full bg-white shadow transform translate-x-1 translate-y-1 transition-transform duration-200"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between border-t border-white/5 pt-4">
+              <div class="flex items-center space-x-3">
+                <div class="p-1.5 rounded-lg bg-white/5 text-slate-300"><i data-lucide="eye-off" class="w-4 h-4"></i></div>
+                <div>
+                  <div class="text-xs font-semibold">Exclude Ambiguous Characters</div>
+                  <div class="text-[10px] text-slate-400">Avoid 0, O, I, l, 1, etc.</div>
+                </div>
+              </div>
+              <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                <input type="checkbox" id="opt-exclude-ambig" onchange="regeneratePassword()" class="switch-checkbox hidden">
+                <label for="opt-exclude-ambig" class="switch-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
+                  <span class="switch-dot block h-3 w-3 rounded-full bg-white shadow transform translate-x-1 translate-y-1 transition-transform duration-200"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col items-center justify-center space-y-6 border-l border-white/5 pl-0 md:pl-8">
+            <span class="text-sm font-semibold tracking-wider uppercase text-slate-300 self-start md:self-center">Entropy Analysis</span>
+            <div class="relative w-48 h-48 flex items-center justify-center">
+              <svg id="orbital-outer" class="absolute w-full h-full text-accent-cyan opacity-40 transition-all duration-500" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-dasharray="289" stroke-dashoffset="100" stroke-width="1.5" class="anim-orbit-cw" />
+              </svg>
+              <svg id="orbital-inner" class="absolute w-40 h-40 text-accent-violet opacity-50 transition-all duration-500" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-dasharray="283" stroke-dashoffset="180" stroke-width="2" class="anim-orbit-ccw" />
+              </svg>
+              <div class="absolute w-32 h-32 rounded-full bg-black/40 backdrop-blur-md flex flex-col items-center justify-center border border-white/10 shadow-inner">
+                <span id="entropy-percentage" class="text-3xl font-extrabold font-mono text-white tracking-tighter">0%</span>
+                <span id="strength-badge" class="text-[10px] tracking-widest uppercase font-mono px-2 py-0.5 rounded bg-accent-coral/20 text-accent-coral font-bold mt-1">Weak</span>
+              </div>
+            </div>
+            <div class="w-full space-y-3 font-mono text-xs">
+              <div class="flex justify-between items-center text-slate-400">
+                <span>Entropy Score:</span>
+                <span id="entropy-bits" class="text-white font-semibold">0 bits</span>
+              </div>
+              <div class="flex justify-between items-center text-slate-400">
+                <span>Time to Crack:</span>
+                <span id="crack-time" class="text-accent-cyan font-semibold">0.02s</span>
+              </div>
+              <div class="relative w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div id="strength-progress-bar" class="absolute top-0 left-0 h-full bg-accent-coral transition-all duration-500 w-[15%]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3 bg-white/5 rounded-2xl p-4 border border-white/5">
+          <i data-lucide="shield-check" class="w-5 h-5 text-accent-emerald shrink-0 mt-0.5"></i>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            <span class="font-semibold text-white">Fortress Tip:</span> Combine uppercase, digits, and unique characters to increase structural complexity. Longer passphrases offer superior protection against supercomputing dictionaries.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-vault" class="lg:col-span-12 space-y-6 hidden transition-all duration-500 ease-out transform">
+      <div class="glass-panel rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h2 class="text-2xl font-extrabold tracking-wider bg-gradient-to-r from-white to-accent-cyan bg-clip-text text-transparent">SECURE ARCHIVE VAULT</h2>
+            <p class="text-xs text-slate-400 font-mono mt-1">Offline Encrypted Password Keyrings</p>
+          </div>
+          <div class="flex flex-wrap gap-2 w-full md:w-auto">
+            <div class="relative flex-grow md:flex-grow-0">
+              <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+              <input type="text" id="vault-search" placeholder="Search saved keys..." oninput="filterVault()" class="w-full md:w-64 pl-10 pr-4 py-2 text-xs rounded-xl glass-input text-white outline-none">
+            </div>
+            <button onclick="exportVaultData()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold flex items-center space-x-1.5 transition-all">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Export Keys</span>
+            </button>
+            <button onclick="clearAllVault()" class="px-4 py-2 rounded-xl bg-accent-coral/10 hover:bg-accent-coral/20 text-accent-coral text-xs font-semibold flex items-center space-x-1.5 transition-all">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <span>Purge All</span>
+            </button>
+          </div>
+        </div>
+        <div id="vault-items-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div id="empty-vault-state" class="col-span-full py-16 flex flex-col items-center justify-center text-center space-y-4">
+            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500 animate-pulse">
+              <i data-lucide="folder-lock" class="w-8 h-8"></i>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-white">Your Vault is Empty</p>
+              <p class="text-xs text-slate-400 max-w-xs mx-auto mt-1">Generate a secure password and use the "Save Key" option to organize your keys offline.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-audit" class="lg:col-span-12 space-y-6 hidden transition-all duration-500 ease-out transform">
+      <div class="glass-panel rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
+        <div class="mb-8">
+          <h2 class="text-2xl font-extrabold tracking-wider bg-gradient-to-r from-white to-accent-cyan bg-clip-text text-transparent">KEY INTEGRITY AUDITOR</h2>
+          <p class="text-xs text-slate-400 font-mono mt-1">Deconstruct and expose vulnerabilities inside existing passwords</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-7 space-y-6">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Insert Target Password to Analyze</label>
+              <div class="relative">
+                <input type="password" id="audit-input" placeholder="Type or paste any password..." oninput="analyzeAuditPassword()" class="w-full glass-input rounded-2xl p-4 pr-12 text-sm text-white font-mono outline-none">
+                <button onclick="toggleAuditVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-all">
+                  <i id="audit-visibility-icon" data-lucide="eye" class="w-5 h-5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-2xl bg-white/5 border border-white/5 flex items-start space-x-3">
+                <div id="audit-icon-len" class="p-1.5 rounded-lg bg-accent-coral/20 text-accent-coral"><i data-lucide="circle-alert" class="w-4 h-4"></i></div>
+                <div>
+                  <h4 class="text-xs font-bold text-white">Ideal Length Check</h4>
+                  <p id="audit-text-len" class="text-[10px] text-slate-400 mt-0.5">Under 12 characters. Vulnerable.</p>
+                </div>
+              </div>
+              <div class="p-4 rounded-2xl bg-white/5 border border-white/5 flex items-start space-x-3">
+                <div id="audit-icon-mix" class="p-1.5 rounded-lg bg-accent-coral/20 text-accent-coral"><i data-lucide="circle-alert" class="w-4 h-4"></i></div>
+                <div>
+                  <h4 class="text-xs font-bold text-white">Entropy Complexity</h4>
+                  <p id="audit-text-mix" class="text-[10px] text-slate-400 mt-0.5">Missing character varieties.</p>
+                </div>
+              </div>
+              <div class="p-4 rounded-2xl bg-white/5 border border-white/5 flex items-start space-x-3">
+                <div id="audit-icon-dict" class="p-1.5 rounded-lg bg-accent-emerald/20 text-accent-emerald"><i data-lucide="circle-check" class="w-4 h-4"></i></div>
+                <div>
+                  <h4 class="text-xs font-bold text-white">Dictionary Protection</h4>
+                  <p id="audit-text-dict" class="text-[10px] text-slate-400 mt-0.5">Safe from sequential keyboard paths.</p>
+                </div>
+              </div>
+              <div class="p-4 rounded-2xl bg-white/5 border border-white/5 flex items-start space-x-3">
+                <div id="audit-icon-rep" class="p-1.5 rounded-lg bg-accent-emerald/20 text-accent-emerald"><i data-lucide="circle-check" class="w-4 h-4"></i></div>
+                <div>
+                  <h4 class="text-xs font-bold text-white">Pattern Repeat Audit</h4>
+                  <p id="audit-text-rep" class="text-[10px] text-slate-400 mt-0.5">No immediate letter clusters.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-2xl bg-black/35 border border-white/5 space-y-6">
+            <span class="text-xs font-mono text-slate-400 uppercase tracking-widest">Realtime Threat Evaluation</span>
+            <div id="threat-indicator-circle" class="w-36 h-36 rounded-full border-4 border-accent-coral flex flex-col items-center justify-center transition-all duration-300">
+              <span id="threat-percentage" class="text-3xl font-extrabold font-mono text-white">Low</span>
+              <span class="text-[9px] tracking-widest text-slate-400 uppercase font-mono mt-0.5">Security Index</span>
+            </div>
+            <div class="text-center">
+              <p id="threat-verdict-title" class="text-sm font-extrabold text-accent-coral uppercase font-mono">CRITICAL VULNERABILITIES DETECTED</p>
+              <p id="threat-verdict-body" class="text-xs text-slate-300 mt-1.5 max-w-sm mx-auto leading-relaxed">This key contains basic sequences easily parsed by basic GPU computing arrays in seconds.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sidebar-stats" class="lg:col-span-4 space-y-6 transition-all duration-300">
+      <div class="glass-panel rounded-3xl p-6 space-y-6 relative overflow-hidden border border-white/5">
+        <h3 class="text-xs font-semibold tracking-wider uppercase text-slate-400 flex items-center space-x-2">
+          <i data-lucide="gauge" class="w-4 h-4 text-accent-cyan"></i>
+          <span>Engine Live Diagnostics</span>
+        </h3>
+        <div class="p-4 rounded-2xl bg-black/35 border border-white/5 flex justify-between items-center">
+          <div>
+            <div class="text-[10px] text-slate-400 uppercase font-mono">Decryption Cost</div>
+            <div class="text-sm font-bold text-white mt-1">68,400 Iterations</div>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-accent-cyan/10 flex items-center justify-center text-accent-cyan">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
+          </div>
+        </div>
+        <div class="p-4 rounded-2xl bg-black/35 border border-white/5 flex justify-between items-center">
+          <div>
+            <div class="text-[10px] text-slate-400 uppercase font-mono">Global Attack Threshold</div>
+            <div class="text-sm font-bold text-accent-emerald mt-1" id="global-attack-threshold">1.3M Years</div>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-accent-emerald/10 flex items-center justify-center text-accent-emerald">
+            <i data-lucide="database" class="w-5 h-5"></i>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Active Secure Node Logs</div>
+          <div class="p-3 rounded-xl bg-black/60 border border-white/5 text-[10.5px] font-mono space-y-2 max-h-[160px] overflow-y-auto">
+            <div class="text-accent-cyan"><span class="text-slate-500">[00:01:02]</span> Initializing 8D spatial math...</div>
+            <div class="text-accent-emerald"><span class="text-slate-500">[00:01:03]</span> Entropy matrices stable.</div>
+            <div class="text-accent-violet"><span class="text-slate-500">[00:01:04]</span> Salt buffers encrypted locally.</div>
+            <div id="dynamic-log" class="text-slate-300"><span class="text-slate-500">[00:01:05]</span> Awaiting generator inputs...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="save-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-6 md:p-8 relative border border-white/10 shadow-2xl transform scale-95 transition-transform duration-300">
+      <button onclick="closeSaveModal()" class="absolute right-5 top-5 text-slate-400 hover:text-white transition-all">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+      <div class="mb-6">
+        <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+          <i data-lucide="bookmark" class="w-5 h-5 text-accent-cyan"></i>
+          <span>Secure Password Save</span>
+        </h3>
+        <p class="text-xs text-slate-400 font-mono mt-1">Saved offline locally under customizable credentials</p>
+      </div>
+      <div class="space-y-4">
+        <div class="p-3 rounded-xl bg-black/40 border border-white/5">
+          <span class="text-[10px] uppercase font-mono text-slate-400 block mb-1">Target Password Key</span>
+          <span id="modal-password-target" class="font-mono text-sm text-accent-cyan font-bold break-all">---</span>
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Platform / Account Name</label>
+          <input type="text" id="save-key-name" placeholder="e.g. Personal Email, Google Account..." class="w-full glass-input text-xs rounded-xl p-3 text-white outline-none">
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Username / Handle <span class="text-[10px] text-slate-500">(Optional)</span></label>
+          <input type="text" id="save-key-username" placeholder="e.g. user@email.com" class="w-full glass-input text-xs rounded-xl p-3 text-white outline-none">
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Category Tag</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setCategoryTag('work')" id="tag-work" class="py-1.5 rounded-lg text-[10px] font-semibold text-center border bg-accent-cyan/10 text-accent-cyan border-accent-cyan/25 transition-all">Work</button>
+            <button onclick="setCategoryTag('finance')" id="tag-finance" class="py-1.5 rounded-lg text-[10px] font-semibold text-center border bg-white/5 text-slate-300 border-white/5 hover:border-white/10 transition-all">Finance</button>
+            <button onclick="setCategoryTag('social')" id="tag-social" class="py-1.5 rounded-lg text-[10px] font-semibold text-center border bg-white/5 text-slate-300 border-white/5 hover:border-white/10 transition-all">Social</button>
+            <button onclick="setCategoryTag('general')" id="tag-general" class="py-1.5 rounded-lg text-[10px] font-semibold text-center border bg-white/5 text-slate-300 border-white/5 hover:border-white/10 transition-all">General</button>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Additional Notes <span class="text-[10px] text-slate-500">(Optional)</span></label>
+          <textarea id="save-key-notes" rows="2" placeholder="Secret clues, recovery pins..." class="w-full glass-input text-xs rounded-xl p-3 text-white outline-none resize-none"></textarea>
+        </div>
+        <button onclick="submitSaveKey()" class="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-violet text-black font-extrabold text-xs tracking-wider uppercase hover:opacity-90 hover:shadow-glow-cyan active:scale-95 transition-all duration-200">
+          Inject Into Vault
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
+
+  <footer class="w-full px-6 py-6 border-t border-white/5 mt-12 glass-panel z-10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400">
+    <div class="flex items-center space-x-2">
+      <i data-lucide="shield-alert" class="w-4 h-4 text-accent-cyan"></i>
+      <span>Fortress8D is built with end-to-end local isolation (zero data exits your device).</span>
+    </div>
+    <div class="flex items-center space-x-4">
+      <a href="#" onclick="showTerms()" class="hover:text-white transition-all">Terms of Isolation</a>
+      <span>•</span>
+      <a href="#" onclick="showDeveloperNotes()" class="hover:text-white transition-all">Developer Log</a>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
